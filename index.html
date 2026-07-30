@@ -243,10 +243,12 @@
     const tarjetas = proyectos.map((p) => {
       const disponibles = (p.propiedades_venta || []).filter(x => x.estado !== 'vendida').length;
       const total = (p.propiedades_venta || []).length;
-      let foto = null;
-      for (const grupo of (p.fotos || [])) {
-        const fs = (grupo.fotos_propiedad_venta || []).sort((a,b)=>a.orden-b.orden);
-        if (fs[0]) { foto = fs[0].archivo_url; break; }
+      let foto = p.foto_portada || null;
+      if (!foto) {
+        for (const grupo of (p.fotos || [])) {
+          const fs = (grupo.fotos_propiedad_venta || []).sort((a,b)=>a.orden-b.orden);
+          if (fs[0]) { foto = fs[0].archivo_url; break; }
+        }
       }
       return `
         <a class="card" href="#/proyecto/${p.id}">
