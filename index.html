@@ -134,6 +134,18 @@
   .whatsapp-card{background:linear-gradient(160deg, #17381f, var(--ink) 60%); border:1px solid #2b4a34; border-radius:2px; padding:32px;}
   .whatsapp-card h3{font-size:24px; margin:0 0 8px;}
   .whatsapp-card p{color:#cfd6e2; font-size:14px; margin-bottom:18px;}
+  .asesores-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .asesor-card{
+    display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    padding:16px 10px; border-radius:2px; text-decoration:none; transition:border-color .2s ease, transform .2s ease;
+  }
+  .asesor-card:hover{border-color:#3ecf68; transform:translateY(-2px);}
+  .asesor-card img{width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(201,162,39,0.5);}
+  .asesor-card .nombre{font-size:14px; font-weight:500;}
+  .asesor-card .wa-mini{display:flex; align-items:center; gap:5px; font-size:11.5px; color:#3ecf68;}
+  .asesor-card .wa-mini svg{width:13px; height:13px;}
+  @media (max-width:420px){.asesores-grid{grid-template-columns:1fr;}}
   .wa-btn{display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); padding:13px 16px; border-radius:2px; text-decoration:none; margin-bottom:9px; font-size:14.5px;}
   .wa-btn:hover{border-color:#3ecf68;}
   .wa-btn svg{width:19px; height:19px; color:#3ecf68;}
@@ -211,8 +223,9 @@
     return `<span class="badge ${clase}">${texto}</span>`;
   }
 
-  function waLink(numero, propiedad) {
-    const texto = encodeURIComponent(`Hola, me interesa la propiedad "${propiedad}"`);
+  function waLink(numero, propiedad, proyecto) {
+    const nombreCompleto = proyecto ? `${propiedad} (${proyecto})` : propiedad;
+    const texto = encodeURIComponent(`Hola, me interesa la propiedad "${nombreCompleto}"`);
     return `https://wa.me/${numero}?text=${texto}`;
   }
 
@@ -342,7 +355,7 @@
           <h1>${p.nombre}</h1>
           <p class="lead">${(p.descripcion || '').split('.').slice(0,2).join('.')}${p.descripcion ? '.' : ''}</p>
           <div class="cta-row">
-            ${wa1 ? `<a class="btn btn-gold" href="${waLink(wa1, p.nombre)}" target="_blank" rel="noopener">${WA_ICON} Escríbenos por WhatsApp</a>` : ''}
+            <a class="btn btn-gold" href="#contacto">${WA_ICON} Escríbenos por WhatsApp</a>
             <a class="btn btn-outline" href="#galeria">Ver fotos</a>
           </div>
         </div>
@@ -418,9 +431,8 @@
         <div class="contact-wrap">
           <div class="whatsapp-card">
             <h3>Escríbenos directo</h3>
-            <p>Respondemos rápido por WhatsApp.</p>
-            ${wa1 ? `<a class="wa-btn" href="${waLink(wa1, p.nombre)}" target="_blank" rel="noopener">${wa1.replace(/^502/,'').replace(/(\d{4})(\d{4})/,'$1-$2')} ${WA_ICON}</a>` : ''}
-            ${wa2 ? `<a class="wa-btn" href="${waLink(wa2, p.nombre)}" target="_blank" rel="noopener">${wa2.replace(/^502/,'').replace(/(\d{4})(\d{4})/,'$1-$2')} ${WA_ICON}</a>` : ''}
+            <p>¿Qué asesor deseas que te contacte?</p>
+            <div class="asesores-grid" id="asesoresGrid"><div style="color:#8892a3; font-size:13px;">Cargando asesores...</div></div>
           </div>
           <div>
             <form id="contactForm">
@@ -465,6 +477,20 @@
         if (e.key === 'ArrowLeft') abrir(indiceActual-1);
         if (e.key === 'ArrowRight') abrir(indiceActual+1);
       });
+    }
+
+    // Asesores
+    const { data: asesores } = await supabase.from('asesores').select('*').eq('activo', true).order('orden');
+    const grid = document.getElementById('asesoresGrid');
+    if (asesores && asesores.length) {
+      grid.innerHTML = asesores.map(a => `
+        <a class="asesor-card" href="${waLink(a.whatsapp, p.nombre, proyecto?.nombre)}" target="_blank" rel="noopener">
+          <img src="${a.foto_url}" alt="${a.nombre}" />
+          <div class="nombre">${a.nombre}</div>
+          <div class="wa-mini">${WA_ICON} WhatsApp</div>
+        </a>`).join('');
+    } else {
+      grid.innerHTML = '<div style="color:#8892a3; font-size:13px;">Escríbenos por WhatsApp para más información.</div>';
     }
 
     // Formulario
