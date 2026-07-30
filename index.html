@@ -92,6 +92,12 @@
   .desc-photo{position:relative;}
   .desc-photo img{border-radius:2px;}
   .desc-photo::before{content:""; position:absolute; top:-14px; left:-14px; right:14px; bottom:14px; border:1px solid var(--gold); z-index:-1; opacity:0.5;}
+  .financing-box{
+    margin-top:20px; background:linear-gradient(135deg, rgba(201,162,39,0.12), rgba(201,162,39,0.03));
+    border:1px solid rgba(201,162,39,0.4); border-radius:2px; padding:18px 20px;
+  }
+  .financing-title{font-family:'Cormorant Garamond', serif; font-size:19px; color:var(--gold-soft); margin-bottom:4px;}
+  .financing-detail{font-size:13.5px; color:#cfd6e2;}
 
   .ficha{background:var(--ink); border:1px solid var(--line); border-radius:2px; padding:36px;}
   .ficha-item{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); font-size:14.5px; color:#dfe4ec;}
@@ -210,6 +216,11 @@
     return `https://wa.me/${numero}?text=${texto}`;
   }
 
+  function fmtQ(n) {
+    if (n == null) return '';
+    return 'Q' + Number(n).toLocaleString('es-GT');
+  }
+
   const app = document.getElementById('app');
 
   async function vistaProyectos() {
@@ -282,6 +293,7 @@
             <h3>${p.nombre}</h3>
             <div class="meta">${p.habitaciones || '–'} hab · ${p.banos || '–'} baños · ${p.niveles || '–'} niveles</div>
             ${estadoBadge(p.estado)}
+            ${p.financiamiento_propio ? '<span class="badge" style="border-color:var(--gold); color:var(--gold-soft); margin-left:6px;">Financiamiento propio</span>' : ''}
           </div>
         </a>`;
     }).join('') || '<div class="empty-state">Este proyecto aún no tiene propiedades publicadas.</div>';
@@ -352,6 +364,13 @@
             <h2 style="margin:8px 0 18px;">${p.nombre}</h2>
             <p>${p.descripcion || ''}</p>
             <p style="margin-top:18px;">${estadoBadge(p.estado)}</p>
+            ${p.financiamiento_propio ? `
+            <div class="financing-box">
+              <div class="financing-title">💰 Financiamiento propio disponible</div>
+              <div class="financing-detail">
+                Enganche desde ${fmtQ(p.financiamiento_enganche_desde)} · hasta ${p.financiamiento_plazo_max_anios || ''} años de plazo · abonos a capital sin penalización.
+              </div>
+            </div>` : ''}
           </div>
           ${fotos[1] ? `<div class="desc-photo"><img src="${fotos[1]}" alt="${p.nombre}" /></div>` : ''}
         </div>
