@@ -356,8 +356,8 @@
           <h1>${p.nombre}</h1>
           <p class="lead">${(p.descripcion || '').split('.').slice(0,2).join('.')}${p.descripcion ? '.' : ''}</p>
           <div class="cta-row">
-            <a class="btn btn-gold" href="#contacto">${WA_ICON} Escríbenos por WhatsApp</a>
-            <a class="btn btn-outline" href="#galeria">Ver fotos</a>
+            <a class="btn btn-gold" href="javascript:void(0)" onclick="document.getElementById('contacto')?.scrollIntoView({behavior:'smooth'})">${WA_ICON} Escríbenos por WhatsApp</a>
+            <a class="btn btn-outline" href="javascript:void(0)" onclick="document.getElementById('galeria')?.scrollIntoView({behavior:'smooth'})">Ver fotos</a>
           </div>
         </div>
       </section>
