@@ -28,7 +28,7 @@
   .brand img{height:34px; width:34px; object-fit:contain;}
   .brand-text .name{font-family:'Cormorant Garamond', serif; font-size:19px; line-height:1.1;}
   .brand-text .tag{font-size:9px; letter-spacing:0.22em; color:var(--gold); text-transform:uppercase;}
-  .header-cta{display:flex; align-items:center; gap:8px; background:var(--gold); color:var(--navy-deep); padding:9px 18px; border-radius:2px; font-size:13px; font-weight:500; text-decoration:none;}
+  .header-cta{display:flex; align-items:center; gap:8px; background:var(--gold); color:var(--navy-deep); padding:9px 18px; border-radius:2px; font-size:13px; font-weight:500; text-decoration:none; border:none; cursor:pointer; font-family:inherit;}
   main{padding-top:76px; min-height:70vh;}
 
   .breadcrumb{font-size:12px; color:#8892a3; margin:24px 0 6px; display:flex; align-items:center; gap:6px;}
@@ -177,7 +177,7 @@
   footer .tag{font-size:10px; letter-spacing:0.26em; color:var(--gold); text-transform:uppercase;}
   footer .fine{font-size:12px; color:#5c6576; margin-top:12px;}
 
-  .fab{position:fixed; bottom:22px; right:22px; z-index:60; background:#25D366; color:#0a0f18; width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.35); text-decoration:none;}
+  .fab{position:fixed; bottom:22px; right:22px; z-index:60; background:#25D366; color:#0a0f18; width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.35); text-decoration:none; border:none; cursor:pointer;}
   .fab svg{width:26px; height:26px;}
 
   .loading{color:#8892a3; text-align:center; padding:60px 20px; font-size:14px;}
@@ -196,7 +196,7 @@
         <div class="tag">Fe · Creer · Construir</div>
       </div>
     </a>
-    <a href="https://wa.me/50248740168" class="header-cta" target="_blank" rel="noopener">Escríbenos</a>
+    <button type="button" id="btnHeaderWA" class="header-cta">Escríbenos</button>
   </div>
 </header>
 
@@ -204,13 +204,104 @@
   <div class="loading">Cargando...</div>
 </main>
 
-<a class="fab" href="https://wa.me/50248740168" target="_blank" rel="noopener" aria-label="WhatsApp">
+<button type="button" class="fab" id="btnFabWA" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.07-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.2 14.2c-.22.62-1.28 1.19-1.77 1.24-.45.05-.9.24-3.04-.63-2.58-1.05-4.24-3.68-4.37-3.85-.13-.17-1.04-1.38-1.04-2.63 0-1.25.66-1.86.89-2.11.22-.25.5-.31.66-.31.17 0 .33 0 .48.01.15.01.36-.06.56.43.22.53.73 1.83.8 1.97.06.13.1.29.02.46-.08.17-.13.28-.25.43-.13.15-.27.34-.38.46-.13.13-.26.27-.11.53.15.26.66 1.09 1.42 1.77.98.87 1.8 1.14 2.06 1.27.26.13.41.11.56-.06.15-.18.65-.76.82-1.02.17-.26.34-.22.56-.13.22.08 1.42.67 1.67.79.25.13.41.19.47.3.06.11.06.61-.16 1.23z"/></svg>
-</a>
+</button>
+
+<div class="preguntas-overlay" id="seleccionarAsesorModal">
+  <div class="preguntas-card" style="max-width:380px;">
+    <button type="button" class="lightbox-close" id="seleccionarAsesorClose" style="position:absolute; top:10px; right:14px; font-size:22px;">&times;</button>
+    <div class="eyebrow" style="margin-bottom:14px;">¿Con quién quieres hablar?</div>
+    <div class="asesores-grid" id="asesoresGridGlobal"><div style="color:#8892a3; font-size:13px;">Cargando asesores...</div></div>
+  </div>
+</div>
+
+<div class="preguntas-overlay" id="preguntasModal">
+  <div class="preguntas-card">
+    <button type="button" class="lightbox-close" id="preguntasClose" style="position:absolute; top:10px; right:14px; font-size:22px;">&times;</button>
+    <div class="preguntas-asesor">
+      <img id="preguntasAsesorFoto" src="" alt="" />
+      <div>
+        <div style="font-size:12px; color:#8892a3;">Le vas a escribir a</div>
+        <div id="preguntasAsesorNombre" style="font-family:'Cormorant Garamond', serif; font-size:20px;"></div>
+      </div>
+    </div>
+    <form id="preguntasForm">
+      <div class="eyebrow" style="margin-bottom:8px;">¿Qué quieres preguntar?</div>
+      <label class="pregunta-check"><input type="checkbox" value="¿Cuál es el precio?" /> ¿Cuál es el precio?</label>
+      <label class="pregunta-check"><input type="checkbox" value="¿Trabajan financiamiento propio?" /> ¿Trabajan financiamiento propio?</label>
+      <label class="pregunta-check"><input type="checkbox" value="¿Cuál es la ubicación exacta?" /> ¿Cuál es la ubicación exacta?</label>
+      <label class="pregunta-check"><input type="checkbox" value="Quisiera agendar una visita" /> Quisiera agendar una visita</label>
+      <label class="pregunta-check"><input type="checkbox" value="¿Qué documentos necesito para comprar?" /> ¿Qué documentos necesito para comprar?</label>
+      <textarea id="preguntaOtra" placeholder="¿Algo más que quieras preguntar? (opcional)" style="margin-top:10px;"></textarea>
+      <button type="submit" class="submit-btn" style="margin-top:14px; width:100%;">Continuar a WhatsApp</button>
+    </form>
+  </div>
+</div>
 
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
   const supabase = createClient('https://knquysqjhprnyztkgmwb.supabase.co', 'sb_publishable_lUjd1hMqkWqnQ4Q8qun5FA_WU-1UOIf');
+
+  // ---------- Asesores y contacto: disponible globalmente en cualquier página ----------
+  let contextoContacto = null; // { propiedad, proyecto } de la propiedad que se esté viendo, o null
+  let asesoresCache = null;
+
+  async function cargarAsesoresGlobal() {
+    if (!asesoresCache) {
+      const { data } = await supabase.from('asesores').select('*').eq('activo', true).order('orden');
+      asesoresCache = data || [];
+    }
+    return asesoresCache;
+  }
+
+  function abrirPreguntas(asesor, contexto) {
+    document.getElementById('preguntasAsesorNombre').textContent = asesor.nombre;
+    document.getElementById('preguntasAsesorFoto').src = asesor.foto_url || '';
+    document.querySelectorAll('#preguntasForm input[type="checkbox"]').forEach((c) => (c.checked = false));
+    document.getElementById('preguntaOtra').value = '';
+    document.getElementById('preguntasModal').classList.add('open');
+    document.getElementById('preguntasForm').onsubmit = (e) => {
+      e.preventDefault();
+      const seleccionadas = Array.from(document.querySelectorAll('#preguntasForm input[type="checkbox"]:checked')).map((c) => c.value);
+      const otra = document.getElementById('preguntaOtra').value.trim();
+      let mensaje = contexto?.propiedad
+        ? `Hola ${asesor.nombre}, me interesa la propiedad "${contexto.propiedad}${contexto.proyecto ? ` (${contexto.proyecto})` : ''}".`
+        : `Hola ${asesor.nombre}, quisiera información sobre sus proyectos en venta.`;
+      if (seleccionadas.length) mensaje += `\n\nQuisiera saber:\n- ${seleccionadas.join('\n- ')}`;
+      if (otra) mensaje += `\n\n${otra}`;
+      window.open(`https://wa.me/${asesor.whatsapp}?text=${encodeURIComponent(mensaje)}`, '_blank');
+      document.getElementById('preguntasModal').classList.remove('open');
+    };
+  }
+  document.getElementById('preguntasClose').addEventListener('click', () => document.getElementById('preguntasModal').classList.remove('open'));
+  document.getElementById('preguntasModal').addEventListener('click', (e) => { if (e.target.id === 'preguntasModal') e.target.classList.remove('open'); });
+
+  async function abrirSelectorAsesor() {
+    const asesores = await cargarAsesoresGlobal();
+    const grid = document.getElementById('asesoresGridGlobal');
+    if (asesores.length) {
+      grid.innerHTML = asesores.map((a, i) => `
+        <button type="button" class="asesor-card" data-idx="${i}">
+          <img src="${a.foto_url}" alt="${a.nombre}" />
+          <div class="nombre">${a.nombre}</div>
+          <div class="wa-mini">WhatsApp</div>
+        </button>`).join('');
+      grid.querySelectorAll('[data-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.getElementById('seleccionarAsesorModal').classList.remove('open');
+          abrirPreguntas(asesores[Number(btn.dataset.idx)], contextoContacto);
+        });
+      });
+    } else {
+      grid.innerHTML = '<div style="color:#8892a3; font-size:13px;">No hay asesores disponibles ahora mismo.</div>';
+    }
+    document.getElementById('seleccionarAsesorModal').classList.add('open');
+  }
+  document.getElementById('btnHeaderWA').addEventListener('click', () => abrirSelectorAsesor());
+  document.getElementById('btnFabWA').addEventListener('click', () => abrirSelectorAsesor());
+  document.getElementById('seleccionarAsesorClose').addEventListener('click', () => document.getElementById('seleccionarAsesorModal').classList.remove('open'));
+  document.getElementById('seleccionarAsesorModal').addEventListener('click', (e) => { if (e.target.id === 'seleccionarAsesorModal') e.target.classList.remove('open'); });
 
   const WA_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.07-1.33A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.2 14.2c-.22.62-1.28 1.19-1.77 1.24-.45.05-.9.24-3.04-.63-2.58-1.05-4.24-3.68-4.37-3.85-.13-.17-1.04-1.38-1.04-2.63 0-1.25.66-1.86.89-2.11.22-.25.5-.31.66-.31.17 0 .33 0 .48.01.15.01.36-.06.56.43.22.53.73 1.83.8 1.97.06.13.1.29.02.46-.08.17-.13.28-.25.43-.13.15-.27.34-.38.46-.13.13-.26.27-.11.53.15.26.66 1.09 1.42 1.77.98.87 1.8 1.14 2.06 1.27.26.13.41.11.56-.06.15-.18.65-.76.82-1.02.17-.26.34-.22.56-.13.22.08 1.42.67 1.67.79.25.13.41.19.47.3.06.11.06.61-.16 1.23z"/></svg>';
 
@@ -365,7 +456,7 @@
           <h1>${p.nombre}</h1>
           <p class="lead">${(p.descripcion || '').split('.').slice(0,2).join('.')}${p.descripcion ? '.' : ''}</p>
           <div class="cta-row">
-            <a class="btn btn-gold" href="javascript:void(0)" onclick="document.getElementById('contacto')?.scrollIntoView({behavior:'smooth'})">${WA_ICON} Escríbenos por WhatsApp</a>
+            <a class="btn btn-gold" href="javascript:void(0)" id="btnEscribenosHero">${WA_ICON} Escríbenos por WhatsApp</a>
             <a class="btn btn-outline" href="javascript:void(0)" id="btnVerFotos">Ver fotos</a>
           </div>
         </div>
@@ -419,29 +510,6 @@
         <img id="lightboxImg" src="" alt="Foto ampliada" />
         <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <div class="lightbox-count" id="lightboxCount"></div>
-      </div>
-
-      <div class="preguntas-overlay" id="preguntasModal">
-        <div class="preguntas-card">
-          <button type="button" class="lightbox-close" id="preguntasClose" style="position:absolute; top:10px; right:14px; font-size:22px;">&times;</button>
-          <div class="preguntas-asesor">
-            <img id="preguntasAsesorFoto" src="" alt="" />
-            <div>
-              <div style="font-size:12px; color:#8892a3;">Le vas a escribir a</div>
-              <div id="preguntasAsesorNombre" style="font-family:'Cormorant Garamond', serif; font-size:20px;"></div>
-            </div>
-          </div>
-          <form id="preguntasForm">
-            <div class="eyebrow" style="margin-bottom:8px;">¿Qué quieres preguntar?</div>
-            <label class="pregunta-check"><input type="checkbox" value="¿Cuál es el precio?" /> ¿Cuál es el precio?</label>
-            <label class="pregunta-check"><input type="checkbox" value="¿Trabajan financiamiento propio?" /> ¿Trabajan financiamiento propio?</label>
-            <label class="pregunta-check"><input type="checkbox" value="¿Cuál es la ubicación exacta?" /> ¿Cuál es la ubicación exacta?</label>
-            <label class="pregunta-check"><input type="checkbox" value="Quisiera agendar una visita" /> Quisiera agendar una visita</label>
-            <label class="pregunta-check"><input type="checkbox" value="¿Qué documentos necesito para comprar?" /> ¿Qué documentos necesito para comprar?</label>
-            <textarea id="preguntaOtra" placeholder="¿Algo más que quieras preguntar? (opcional)" style="margin-top:10px;"></textarea>
-            <button type="submit" class="submit-btn" style="margin-top:14px; width:100%;">${WA_ICON} Continuar a WhatsApp</button>
-          </form>
-        </div>
       </div>
 
       ${proyecto ? `
@@ -517,8 +585,10 @@
       });
     }
 
-    // Asesores
-    const { data: asesores } = await supabase.from('asesores').select('*').eq('activo', true).order('orden');
+    // Asesores (usa la lógica global, pasándole el contexto de esta propiedad)
+    contextoContacto = { propiedad: p.nombre, proyecto: proyecto?.nombre || null };
+    document.getElementById('btnEscribenosHero')?.addEventListener('click', () => abrirSelectorAsesor());
+    const asesores = await cargarAsesoresGlobal();
     const grid = document.getElementById('asesoresGrid');
     if (asesores && asesores.length) {
       grid.innerHTML = asesores.map((a, i) => `
@@ -528,31 +598,11 @@
           <div class="wa-mini">${WA_ICON} WhatsApp</div>
         </button>`).join('');
       grid.querySelectorAll('[data-asesor-idx]').forEach((btn) => {
-        btn.addEventListener('click', () => abrirPreguntas(asesores[Number(btn.dataset.asesorIdx)]));
+        btn.addEventListener('click', () => abrirPreguntas(asesores[Number(btn.dataset.asesorIdx)], contextoContacto));
       });
     } else {
       grid.innerHTML = '<div style="color:#8892a3; font-size:13px;">Escríbenos por WhatsApp para más información.</div>';
     }
-
-    function abrirPreguntas(asesor) {
-      document.getElementById('preguntasAsesorNombre').textContent = asesor.nombre;
-      document.getElementById('preguntasAsesorFoto').src = asesor.foto_url || '';
-      document.querySelectorAll('#preguntasForm input[type="checkbox"]').forEach((c) => (c.checked = false));
-      document.getElementById('preguntaOtra').value = '';
-      document.getElementById('preguntasModal').classList.add('open');
-      document.getElementById('preguntasForm').onsubmit = (e) => {
-        e.preventDefault();
-        const seleccionadas = Array.from(document.querySelectorAll('#preguntasForm input[type="checkbox"]:checked')).map((c) => c.value);
-        const otra = document.getElementById('preguntaOtra').value.trim();
-        let mensaje = `Hola ${asesor.nombre}, me interesa la propiedad "${p.nombre}${proyecto ? ` (${proyecto.nombre})` : ''}".`;
-        if (seleccionadas.length) mensaje += `\n\nQuisiera saber:\n- ${seleccionadas.join('\n- ')}`;
-        if (otra) mensaje += `\n\n${otra}`;
-        window.open(`https://wa.me/${asesor.whatsapp}?text=${encodeURIComponent(mensaje)}`, '_blank');
-        document.getElementById('preguntasModal').classList.remove('open');
-      };
-    }
-    document.getElementById('preguntasClose').addEventListener('click', () => document.getElementById('preguntasModal').classList.remove('open'));
-    document.getElementById('preguntasModal').addEventListener('click', (e) => { if (e.target.id === 'preguntasModal') e.target.classList.remove('open'); });
 
     // Formulario
     const form = document.getElementById('contactForm');
@@ -577,9 +627,9 @@
     const hash = location.hash || '#/';
     const partes = hash.replace('#/', '').split('/').filter(Boolean);
     window.scrollTo(0,0);
-    if (partes[0] === 'proyecto' && partes[1]) await vistaPropiedades(partes[1]);
+    if (partes[0] === 'proyecto' && partes[1]) { contextoContacto = null; await vistaPropiedades(partes[1]); }
     else if (partes[0] === 'propiedad' && partes[1]) await vistaDetalle(partes[1]);
-    else await vistaProyectos();
+    else { contextoContacto = null; await vistaProyectos(); }
   }
 
   window.addEventListener('hashchange', render);
