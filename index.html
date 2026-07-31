@@ -49,6 +49,9 @@
   }
   .card:hover{border-color:var(--gold); transform:translateY(-2px);}
   .card .thumb{width:100%; height:190px; object-fit:cover; background:#1c2534;}
+  .thumb-carrusel{position:relative; width:100%; height:190px; background:#1c2534; overflow:hidden;}
+  .thumb-carrusel img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity 1.2s ease;}
+  .thumb-carrusel img.oculta{opacity:0;}
   .card .body{padding:18px 20px;}
   .card h3{margin:0 0 6px; font-size:21px;}
   .card .meta{font-size:12.5px; color:#8892a3;}
@@ -366,7 +369,10 @@
       }
       return `
         <a class="card" href="#/proyecto/${p.id}">
-          <img class="thumb" src="${foto || 'fotos/logo.png'}" alt="${p.nombre}" />
+          <div class="thumb-carrusel" ${p.foto_destacada ? `data-foto-b="${p.foto_destacada}"` : ''}>
+            <img class="thumb foto-a" src="${foto || 'fotos/logo.png'}" alt="${p.nombre}" />
+            ${p.foto_destacada ? `<img class="thumb foto-b oculta" src="${p.foto_destacada}" alt="${p.nombre}" />` : ''}
+          </div>
           <div class="body">
             <h3>${p.nombre}</h3>
             <div class="meta">${p.ubicacion || ''}</div>
@@ -383,6 +389,12 @@
       </div>
       <div class="wrap cards-grid">${tarjetas}</div>
     `;
+
+    document.querySelectorAll('.thumb-carrusel[data-foto-b]').forEach((cont) => {
+      const a = cont.querySelector('.foto-a');
+      const b = cont.querySelector('.foto-b');
+      setInterval(() => { a.classList.toggle('oculta'); b.classList.toggle('oculta'); }, 2500);
+    });
   }
 
   async function vistaPropiedades(proyectoId) {
