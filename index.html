@@ -122,6 +122,14 @@
   .lightbox-prev{left:18px;} .lightbox-next{right:18px;}
   .lightbox-count{position:absolute; bottom:20px; left:50%; transform:translateX(-50%); font-size:12px; color:#8892a3;}
 
+  .preguntas-overlay{display:none; position:fixed; inset:0; z-index:110; background:rgba(6,9,15,0.85); align-items:center; justify-content:center; padding:20px;}
+  .preguntas-overlay.open{display:flex;}
+  .preguntas-card{position:relative; background:var(--ink); border:1px solid var(--line); border-radius:4px; padding:28px 24px; width:100%; max-width:420px; max-height:88vh; overflow-y:auto;}
+  .preguntas-asesor{display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--line);}
+  .preguntas-asesor img{width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid rgba(201,162,39,0.5);}
+  .pregunta-check{display:flex; align-items:center; gap:10px; font-size:14px; padding:9px 0; cursor:pointer; color:#dfe4ec;}
+  .pregunta-check input{width:16px; height:16px; accent-color:var(--gold); flex-shrink:0;}
+
   .location-box{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:18px; background:var(--ink); border:1px solid var(--line); padding:28px 32px; border-radius:2px;}
   .location-box .addr{display:flex; gap:12px; align-items:flex-start;}
   .location-box svg{width:20px; height:20px; color:var(--gold); margin-top:2px; flex-shrink:0;}
@@ -140,6 +148,7 @@
     display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
     padding:16px 10px; border-radius:2px; text-decoration:none; transition:border-color .2s ease, transform .2s ease;
+    font-family:inherit; color:inherit; cursor:pointer; width:100%;
   }
   .asesor-card:hover{border-color:#3ecf68; transform:translateY(-2px);}
   .asesor-card img{width:64px; height:64px; border-radius:50%; object-fit:cover; border:2px solid rgba(201,162,39,0.5);}
@@ -412,6 +421,29 @@
         <div class="lightbox-count" id="lightboxCount"></div>
       </div>
 
+      <div class="preguntas-overlay" id="preguntasModal">
+        <div class="preguntas-card">
+          <button type="button" class="lightbox-close" id="preguntasClose" style="position:absolute; top:10px; right:14px; font-size:22px;">&times;</button>
+          <div class="preguntas-asesor">
+            <img id="preguntasAsesorFoto" src="" alt="" />
+            <div>
+              <div style="font-size:12px; color:#8892a3;">Le vas a escribir a</div>
+              <div id="preguntasAsesorNombre" style="font-family:'Cormorant Garamond', serif; font-size:20px;"></div>
+            </div>
+          </div>
+          <form id="preguntasForm">
+            <div class="eyebrow" style="margin-bottom:8px;">¿Qué quieres preguntar?</div>
+            <label class="pregunta-check"><input type="checkbox" value="¿Cuál es el precio?" /> ¿Cuál es el precio?</label>
+            <label class="pregunta-check"><input type="checkbox" value="¿Trabajan financiamiento propio?" /> ¿Trabajan financiamiento propio?</label>
+            <label class="pregunta-check"><input type="checkbox" value="¿Cuál es la ubicación exacta?" /> ¿Cuál es la ubicación exacta?</label>
+            <label class="pregunta-check"><input type="checkbox" value="Quisiera agendar una visita" /> Quisiera agendar una visita</label>
+            <label class="pregunta-check"><input type="checkbox" value="¿Qué documentos necesito para comprar?" /> ¿Qué documentos necesito para comprar?</label>
+            <textarea id="preguntaOtra" placeholder="¿Algo más que quieras preguntar? (opcional)" style="margin-top:10px;"></textarea>
+            <button type="submit" class="submit-btn" style="margin-top:14px; width:100%;">${WA_ICON} Continuar a WhatsApp</button>
+          </form>
+        </div>
+      </div>
+
       ${proyecto ? `
       <section class="wrap pane" style="padding-top:0;">
         <div class="location-box">
@@ -489,15 +521,38 @@
     const { data: asesores } = await supabase.from('asesores').select('*').eq('activo', true).order('orden');
     const grid = document.getElementById('asesoresGrid');
     if (asesores && asesores.length) {
-      grid.innerHTML = asesores.map(a => `
-        <a class="asesor-card" href="${waLink(a.whatsapp, p.nombre, proyecto?.nombre)}" target="_blank" rel="noopener">
+      grid.innerHTML = asesores.map((a, i) => `
+        <button type="button" class="asesor-card" data-asesor-idx="${i}">
           <img src="${a.foto_url}" alt="${a.nombre}" />
           <div class="nombre">${a.nombre}</div>
           <div class="wa-mini">${WA_ICON} WhatsApp</div>
-        </a>`).join('');
+        </button>`).join('');
+      grid.querySelectorAll('[data-asesor-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => abrirPreguntas(asesores[Number(btn.dataset.asesorIdx)]));
+      });
     } else {
       grid.innerHTML = '<div style="color:#8892a3; font-size:13px;">Escríbenos por WhatsApp para más información.</div>';
     }
+
+    function abrirPreguntas(asesor) {
+      document.getElementById('preguntasAsesorNombre').textContent = asesor.nombre;
+      document.getElementById('preguntasAsesorFoto').src = asesor.foto_url || '';
+      document.querySelectorAll('#preguntasForm input[type="checkbox"]').forEach((c) => (c.checked = false));
+      document.getElementById('preguntaOtra').value = '';
+      document.getElementById('preguntasModal').classList.add('open');
+      document.getElementById('preguntasForm').onsubmit = (e) => {
+        e.preventDefault();
+        const seleccionadas = Array.from(document.querySelectorAll('#preguntasForm input[type="checkbox"]:checked')).map((c) => c.value);
+        const otra = document.getElementById('preguntaOtra').value.trim();
+        let mensaje = `Hola ${asesor.nombre}, me interesa la propiedad "${p.nombre}${proyecto ? ` (${proyecto.nombre})` : ''}".`;
+        if (seleccionadas.length) mensaje += `\n\nQuisiera saber:\n- ${seleccionadas.join('\n- ')}`;
+        if (otra) mensaje += `\n\n${otra}`;
+        window.open(`https://wa.me/${asesor.whatsapp}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        document.getElementById('preguntasModal').classList.remove('open');
+      };
+    }
+    document.getElementById('preguntasClose').addEventListener('click', () => document.getElementById('preguntasModal').classList.remove('open'));
+    document.getElementById('preguntasModal').addEventListener('click', (e) => { if (e.target.id === 'preguntasModal') e.target.classList.remove('open'); });
 
     // Formulario
     const form = document.getElementById('contactForm');
