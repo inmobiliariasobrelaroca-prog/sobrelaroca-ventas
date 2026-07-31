@@ -357,7 +357,7 @@
           <p class="lead">${(p.descripcion || '').split('.').slice(0,2).join('.')}${p.descripcion ? '.' : ''}</p>
           <div class="cta-row">
             <a class="btn btn-gold" href="javascript:void(0)" onclick="document.getElementById('contacto')?.scrollIntoView({behavior:'smooth'})">${WA_ICON} Escríbenos por WhatsApp</a>
-            <a class="btn btn-outline" href="javascript:void(0)" onclick="document.getElementById('galeria')?.scrollIntoView({behavior:'smooth'})">Ver fotos</a>
+            <a class="btn btn-outline" href="javascript:void(0)" id="btnVerFotos">Ver fotos</a>
           </div>
         </div>
       </section>
@@ -477,6 +477,11 @@
         if (e.key === 'Escape') cerrar();
         if (e.key === 'ArrowLeft') abrir(indiceActual-1);
         if (e.key === 'ArrowRight') abrir(indiceActual+1);
+      });
+      document.getElementById('btnVerFotos')?.addEventListener('click', () => abrir(0));
+    } else {
+      document.getElementById('btnVerFotos')?.addEventListener('click', () => {
+        document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' });
       });
     }
 
