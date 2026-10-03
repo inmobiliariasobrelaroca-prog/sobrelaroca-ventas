@@ -68,7 +68,54 @@
   .badge.reservada{border-color:#7a6a3a; color:#d4b866;}
   .badge.construccion{border-color:#3a6a7a; color:#7ec9d9;}
 
+  /* Propiedad vendida: ya no es un <a>, sino una tarjeta sin link. Se ve
+     apagada (foto en gris) y no reacciona al pasar el mouse, para que
+     quede claro de un vistazo que ya no se puede elegir. */
+  .card.vendida{cursor:default;}
+  .card.vendida:hover{border-color:var(--line); transform:none;}
+  .card.vendida .thumb, .card.vendida .thumb-carrusel img{filter:grayscale(1) brightness(.72);}
+
   .empty-state{color:#8892a3; text-align:center; padding:80px 20px; font-size:15px;}
+
+  /* ---------- Miniatura del plano en la tarjeta del proyecto (Las Luces) ---------- */
+  .thumb-plano{position:relative; width:100%; height:190px; background:#EDE7D9; overflow:hidden;}
+  .thumb-plano img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;}
+  .thumb-plano svg{position:absolute; inset:0; width:100%; height:100%;}
+
+  /* ---------- Página del plano grande (venta de lotes y casas) ---------- */
+  .beneficios-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:28px 0 8px;}
+  @media (max-width:820px){.beneficios-grid{grid-template-columns:1fr;}}
+  .beneficio-box{background:var(--ink); border:1px solid var(--line); border-radius:2px; padding:22px 24px;}
+  .beneficio-box .precio-desde{font-family:'Cormorant Garamond', serif; font-size:30px; color:var(--gold-soft); margin:4px 0 6px;}
+  .beneficio-box h3{font-size:14px; margin:0; text-transform:uppercase; letter-spacing:0.08em; color:#8892a3; font-weight:500;}
+  .beneficio-box p{font-size:13.5px; color:#cfd6e2; margin:0;}
+
+  .caracteristicas-row{display:flex; flex-wrap:wrap; gap:10px 28px; margin:20px 0 6px;}
+  .caracteristica-chip{display:flex; align-items:center; gap:8px; font-size:13.5px; color:#dfe4ec;}
+  .caracteristica-chip svg{width:16px; height:16px; color:var(--gold); flex-shrink:0;}
+
+  .plano-stage{background:#EDE7D9; border:1px solid var(--line); border-radius:3px; overflow:auto; max-height:76vh;}
+  .plano-stage-inner{position:relative; width:100%;}
+  .plano-stage-inner img{display:block; width:100%; user-select:none;}
+  .plano-stage-inner svg{position:absolute; inset:0; width:100%; height:100%;}
+  .plano-stage path{cursor:pointer; transition:fill-opacity .15s ease;}
+  .plano-stage path:hover{fill-opacity:0.62 !important;}
+  .plano-toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; margin:14px 0;}
+  .plano-leyenda{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:#cfd6e2;}
+  .plano-leyenda span{display:flex; align-items:center; gap:6px;}
+  .plano-leyenda i{width:12px; height:12px; border-radius:2px; display:inline-block;}
+  .plano-zoom-btn{margin-left:auto; background:none; border:1px solid var(--line); color:var(--gold-soft); padding:7px 14px; border-radius:2px; font-size:12.5px; cursor:pointer; font-family:inherit;}
+  .plano-nota{font-size:12.5px; color:#8892a3; margin-top:10px;}
+
+  .lote-panel{margin-top:16px; background:var(--ink); border:1px solid var(--gold); border-radius:3px; padding:22px 24px;}
+  .lote-panel .lote-titulo{font-family:'Cormorant Garamond', serif; font-size:24px; margin-bottom:2px;}
+  .lote-panel .lote-estado{font-size:12.5px; margin-bottom:14px;}
+  .lote-panel .lote-opcion{background:var(--navy); border:1px solid var(--line); border-radius:2px; padding:14px 16px; margin-bottom:10px;}
+  .lote-panel .lote-opcion .fila{display:flex; justify-content:space-between; align-items:baseline;}
+  .lote-panel .lote-opcion .fila span:first-child{font-size:13px; color:#cfd6e2;}
+  .lote-panel .lote-opcion .precio{font-family:'Cormorant Garamond', serif; font-size:22px; color:var(--gold-soft);}
+  .lote-panel .lote-opcion .cond{font-size:12px; color:#8892a3; margin-top:4px;}
+  .lote-panel .lote-vendido{font-size:13.5px; color:#c99178;}
 
   /* ---------- Detalle de propiedad (mismo patrón visual de antes) ---------- */
   .hero{position:relative; min-height:78vh; display:flex; align-items:flex-end; background:#000;}
@@ -345,6 +392,48 @@
     generic: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/>',
   };
 
+  // ---------- Plano de lotes (Las Luces, Retalhuleu) ----------
+  // El trazo sale del mismo DXF que usa la app de ventas interna: mismas
+  // proporciones, mismos lotes. Si algún día cambia el loteo, esto se
+  // actualiza desde allá (src/MapaLotes.tsx) y se copia aquí.
+  const LOTES_GEO = {
+    1: { d: "M 210.31 276.5 L 210.31 276.14 L 257.11 276.14 L 260.71 276.14 L 260.71 391.32 L 226.15 391.32 L 224.6 391.24 L 223.06 391.02 L 221.55 390.64 L 220.09 390.11 L 218.69 389.45 L 217.35 388.65 L 216.1 387.72 L 214.95 386.68 L 213.91 385.53 L 212.98 384.28 L 212.18 382.95 L 211.52 381.54 L 210.99 380.08 L 210.62 378.57 L 210.39 377.03 L 210.31 375.48 L 210.31 276.51 Z", cx: 221.1, cy: 362.0 },
+    2: { d: "M 260.71 391.32 L 260.71 276.14 L 264.31 276.14 L 311.11 276.14 L 311.11 391.32 Z", cx: 281.6, cy: 322.2 },
+    3: { d: "M 361.52 276.14 L 361.52 276.14 L 361.52 391.32 L 311.11 391.32 L 311.11 276.14 L 311.11 276.14 Z", cx: 336.3, cy: 314.5 },
+    4: { d: "M 361.52 391.32 L 361.52 276.14 L 411.92 276.14 L 411.92 391.32 Z", cx: 386.7, cy: 333.7 },
+    5: { d: "M 462.32 276.14 L 462.32 276.14 L 462.32 391.32 L 411.92 391.32 L 411.92 276.14 L 411.92 276.14 Z", cx: 437.1, cy: 314.5 },
+    6: { d: "M 462.32 391.32 L 462.32 276.14 L 512.72 276.14 L 512.72 276.14 L 512.72 391.32 Z", cx: 492.6, cy: 322.2 },
+    7: { d: "M 560.16 391.34 L 560.14 391.34 L 560.14 391.34 L 559.77 391.32 L 512.72 391.32 L 512.72 276.14 L 512.72 276.14 L 560.16 275.43 Z", cx: 542.3, cy: 348.0 },
+    17: { d: "M 846.92 896.81 L 762.4 975.71 L 730.37 934.86 L 814.75 855.9 L 845.77 895.38 L 846.0 895.65 L 846.01 895.65 L 846.62 896.42 Z", cx: 817.4, cy: 905.8 },
+    18: { d: "M 699.15 895.05 L 783.5 816.11 L 814.75 855.9 L 730.37 934.86 Z", cx: 756.9, cy: 875.5 },
+    19: { d: "M 667.93 855.23 L 752.25 776.33 L 783.5 816.11 L 699.15 895.05 Z", cx: 725.7, cy: 835.7 },
+    20: { d: "M 636.72 815.42 L 721.0 736.55 L 752.25 776.33 L 667.93 855.23 Z", cx: 694.5, cy: 795.9 },
+    21: { d: "M 605.5 775.61 L 689.75 696.76 L 721.0 736.55 L 636.72 815.42 Z", cx: 663.2, cy: 756.1 },
+    22: { d: "M 574.28 735.79 L 658.51 656.98 L 689.75 696.76 L 605.5 775.61 Z", cx: 632.0, cy: 716.3 },
+    23: { d: "M 543.06 695.98 L 627.26 617.2 L 658.51 656.98 L 574.28 735.79 Z", cx: 600.8, cy: 676.5 },
+    24: { d: "M 511.85 656.17 L 596.01 577.41 L 627.26 617.2 L 543.06 695.98 Z", cx: 569.5, cy: 636.7 },
+    25: { d: "M 596.01 577.41 L 511.85 656.17 L 480.63 616.35 L 564.76 537.63 Z", cx: 538.3, cy: 596.9 },
+    26: { d: "M 564.76 537.63 L 480.63 616.35 L 451.63 579.37 L 449.41 576.54 L 533.51 497.85 Z", cx: 496.0, cy: 561.5 },
+    27: { d: "M 533.51 497.85 L 449.41 576.54 L 418.28 536.84 L 502.36 458.18 Z", cx: 475.9, cy: 517.4 },
+    28: { d: "M 418.2 536.73 L 416.04 533.98 L 386.98 496.91 L 453.64 434.53 L 476.36 434.53 L 477.66 434.6 L 479.23 434.84 L 480.77 435.24 L 482.27 435.78 L 483.7 436.48 L 485.06 437.32 L 486.32 438.28 L 487.48 439.37 L 488.52 440.58 L 502.26 458.06 Z", cx: 467.0, cy: 455.1 },
+    29: { d: "M 386.98 496.91 L 302.54 575.93 L 271.33 536.11 L 355.76 457.1 L 357.98 459.93 Z", cx: 334.9, cy: 505.2 },
+    30: { d: "M 416.04 533.98 L 418.2 536.73 L 333.76 615.74 L 302.54 575.93 L 386.98 496.91 Z", cx: 371.5, cy: 551.9 },
+    31: { d: "M 449.41 576.54 L 364.98 655.55 L 333.84 615.84 L 415.93 539.04 L 418.28 536.84 Z", cx: 396.5, cy: 584.8 },
+    32: { d: "M 480.63 616.35 L 396.19 695.37 L 392.8 691.05 L 364.98 655.55 L 449.41 576.54 L 451.63 579.37 Z", cx: 422.6, cy: 635.7 },
+    33: { d: "M 511.85 656.17 L 427.41 735.18 L 396.19 695.37 L 480.63 616.35 Z", cx: 454.0, cy: 675.8 },
+    34: { d: "M 427.41 735.18 L 511.85 656.17 L 543.06 695.98 L 458.63 774.99 Z", cx: 485.2, cy: 715.6 },
+    35: { d: "M 458.63 774.99 L 543.06 695.98 L 574.28 735.79 L 489.84 814.81 Z", cx: 516.5, cy: 755.4 },
+    36: { d: "M 489.84 814.81 L 574.28 735.79 L 605.5 775.61 L 521.06 854.62 Z", cx: 547.7, cy: 795.2 },
+    37: { d: "M 521.06 854.62 L 605.5 775.61 L 636.72 815.42 L 552.28 894.43 Z", cx: 578.9, cy: 835.0 },
+    38: { d: "M 552.28 894.43 L 636.72 815.42 L 667.93 855.23 L 583.5 934.25 Z", cx: 610.1, cy: 874.8 },
+    39: { d: "M 583.5 934.25 L 667.93 855.23 L 699.15 895.05 L 614.71 974.06 Z", cx: 641.3, cy: 914.6 },
+    40: { d: "M 614.71 974.06 L 699.15 895.05 L 730.37 934.86 L 645.93 1013.87 Z", cx: 672.5, cy: 954.5 },
+    41: { d: "M 762.4 975.71 L 677.88 1054.62 L 677.15 1053.69 L 645.93 1013.87 L 730.37 934.86 Z", cx: 698.7, cy: 1006.5 },
+  };
+  const LOTES_VISTA = { w: 1080, h: 1281.6 };
+  const LOTES_COLOR = { disponible: "#2E9E6B", apartado: "#C9A227", vendido: "#C0392B", no_disponible: "#39445A" };
+  const LOTES_ROTULO = { disponible: "Disponible", apartado: "Apartado", vendido: "Vendido", no_disponible: "Todavía no a la venta" };
+
   function estadoBadge(estado) {
     const map = {
       disponible: ['Disponible', ''],
@@ -371,10 +460,13 @@
 
   async function vistaProyectos() {
     app.innerHTML = '<div class="loading">Cargando proyectos...</div>';
-    const { data: proyectos, error } = await supabase
-      .from('proyectos_venta')
-      .select('*, propiedades_venta(id, estado), fotos:propiedades_venta(fotos_propiedad_venta(archivo_url, orden))')
-      .order('orden');
+    const [{ data: proyectos, error }, { data: lotesTodos }] = await Promise.all([
+      supabase
+        .from('proyectos_venta')
+        .select('*, propiedades_venta(id, estado, orden, foto_secundaria, fotos_propiedad_venta(archivo_url, orden))')
+        .order('orden'),
+      supabase.from('lotes').select('proyecto_venta_id, numero, estado'),
+    ]);
 
     if (error || !proyectos) {
       app.innerHTML = '<div class="wrap loading">No se pudieron cargar los proyectos.</div>';
@@ -386,21 +478,66 @@
       return;
     }
 
+    // Proyectos con filas en "lotes" (como Las Luces Retalhuleu) venden lotes
+    // y casas sobre el mismo terreno, así que su tarjeta muestra el plano en
+    // vivo en vez de fotos.
+    const lotesPorProyecto = {};
+    (lotesTodos || []).forEach((l) => {
+      (lotesPorProyecto[l.proyecto_venta_id] ||= []).push(l);
+    });
+
     const tarjetas = proyectos.map((p) => {
-      const disponibles = (p.propiedades_venta || []).filter(x => x.estado !== 'vendida').length;
-      const total = (p.propiedades_venta || []).length;
-      let foto = p.foto_portada || null;
-      if (!foto) {
-        for (const grupo of (p.fotos || [])) {
-          const fs = (grupo.fotos_propiedad_venta || []).sort((a,b)=>a.orden-b.orden);
-          if (fs[0]) { foto = fs[0].archivo_url; break; }
-        }
+      const lotesProyecto = lotesPorProyecto[p.id];
+
+      if (lotesProyecto && lotesProyecto.length) {
+        const disponibles = lotesProyecto.filter((l) => l.estado === 'disponible').length;
+        const porNumero = {};
+        lotesProyecto.forEach((l) => { porNumero[l.numero] = l; });
+        const paths = Object.entries(LOTES_GEO).map(([num, g]) => {
+          const l = porNumero[num];
+          if (!l) return '';
+          return `<path d="${g.d}" fill="${LOTES_COLOR[l.estado] || LOTES_COLOR.no_disponible}" fill-opacity="0.55"></path>`;
+        }).join('');
+        return `
+          <a class="card" href="#/plano/${p.id}">
+            <div class="thumb-plano">
+              <img src="https://sobrelaroca-pagos.vercel.app/plano-reu.svg" alt="Plano de ${p.nombre}" />
+              <svg viewBox="0 0 ${LOTES_VISTA.w} ${LOTES_VISTA.h}" preserveAspectRatio="xMidYMid slice">${paths}</svg>
+            </div>
+            <div class="body">
+              <h3>${p.nombre}</h3>
+              <div class="meta">${p.ubicacion || ''}</div>
+              <div class="badge">Lotes y casas · ${disponibles} lotes disponibles</div>
+            </div>
+          </a>`;
       }
+
+      // Proyectos de casas: el carrusel de la tarjeta se arma solo con fotos
+      // de propiedades que siguen disponibles (no "vendida"). Así, cuando se
+      // vende una casa, su foto deja de aparecer sola, sin depender de que
+      // alguien actualice foto_portada/foto_destacada a mano.
+      const vivas = (p.propiedades_venta || [])
+        .filter((x) => x.estado !== 'vendida')
+        .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+      const total = (p.propiedades_venta || []).length;
+      const disponibles = vivas.length;
+
+      const fotos = [];
+      vivas.forEach((prop) => {
+        const fs = (prop.fotos_propiedad_venta || []).slice().sort((a, b) => a.orden - b.orden);
+        if (fs[0]) fotos.push(fs[0].archivo_url);
+        const destacada = prop.foto_secundaria || (fs[1] && fs[1].archivo_url);
+        if (destacada) fotos.push(destacada);
+      });
+      const fotosUnicas = [...new Set(fotos)];
+      const portada = fotosUnicas[0] || p.foto_portada || 'fotos/logo.png';
+      const resto = fotosUnicas.slice(1);
+
       return `
         <a class="card" href="#/proyecto/${p.id}">
-          <div class="thumb-carrusel" ${p.foto_destacada ? `data-foto-b="${p.foto_destacada}"` : ''}>
-            <img class="thumb foto-a" src="${foto || 'fotos/logo.png'}" alt="${p.nombre}" />
-            ${p.foto_destacada ? `<img class="thumb foto-b oculta" src="${p.foto_destacada}" alt="${p.nombre}" />` : ''}
+          <div class="thumb-carrusel" data-carrusel="1">
+            <img class="thumb foto" src="${portada}" alt="${p.nombre}" />
+            ${resto.map((f) => `<img class="thumb foto oculta" src="${f}" alt="${p.nombre}" />`).join('')}
           </div>
           <div class="body">
             <h3>${p.nombre}</h3>
@@ -435,15 +572,27 @@
       <div class="wrap cards-grid">${tarjetas}</div>
     `;
 
-    document.querySelectorAll('.thumb-carrusel[data-foto-b]').forEach((cont) => {
-      const a = cont.querySelector('.foto-a');
-      const b = cont.querySelector('.foto-b');
-      setInterval(() => { a.classList.toggle('oculta'); b.classList.toggle('oculta'); }, 2500);
+    document.querySelectorAll('.thumb-carrusel[data-carrusel]').forEach((cont) => {
+      const fotos = cont.querySelectorAll('.foto');
+      if (fotos.length < 2) return;
+      let i = 0;
+      setInterval(() => {
+        fotos[i].classList.add('oculta');
+        i = (i + 1) % fotos.length;
+        fotos[i].classList.remove('oculta');
+      }, 2500);
     });
   }
 
   async function vistaPropiedades(proyectoId) {
     app.innerHTML = '<div class="loading">Cargando propiedades...</div>';
+
+    // Red de seguridad para links viejos guardados como #/proyecto/<id>: si
+    // el proyecto vende lotes (como Las Luces), lo correcto es la página de
+    // venta del plano, no un listado de casas.
+    const { data: lotesCheck } = await supabase.from('lotes').select('id').eq('proyecto_venta_id', proyectoId).limit(1);
+    if (lotesCheck && lotesCheck.length) { await vistaPlano(proyectoId); return; }
+
     const { data: proyecto } = await supabase.from('proyectos_venta').select('*').eq('id', proyectoId).maybeSingle();
     const { data: propiedades, error } = await supabase
       .from('propiedades_venta')
@@ -459,16 +608,20 @@
     const tarjetas = (propiedades || []).map((p) => {
       const fotos = (p.fotos_propiedad_venta || []).sort((a,b)=>a.orden-b.orden);
       const foto = fotos[0]?.archivo_url || 'fotos/logo.png';
-      return `
-        <a class="card" href="#/propiedad/${p.id}">
+      const vendida = p.estado === 'vendida';
+      const cuerpo = `
           <img class="thumb" src="${foto}" alt="${p.nombre}" />
           <div class="body">
             <h3>${p.nombre}</h3>
             <div class="meta">${p.habitaciones || '–'} hab · ${p.banos || '–'} baños · ${p.niveles || '–'} niveles</div>
             ${estadoBadge(p.estado)}
             ${p.financiamiento_propio ? '<span class="badge" style="border-color:var(--gold); color:var(--gold-soft); margin-left:6px;">Financiamiento propio</span>' : ''}
-          </div>
-        </a>`;
+          </div>`;
+      // Una casa vendida ya no se puede seleccionar: va en un <div> sin
+      // enlace (no un <a>), y la foto sale en gris por la clase "vendida".
+      return vendida
+        ? `<div class="card vendida">${cuerpo}</div>`
+        : `<a class="card" href="#/propiedad/${p.id}">${cuerpo}</a>`;
     }).join('') || '<div class="empty-state">Este proyecto aún no tiene propiedades publicadas.</div>';
 
     app.innerHTML = `
@@ -727,11 +880,234 @@
     });
   }
 
+  // ---------- Página de venta de un proyecto de lotes (Las Luces, Retalhuleu) ----------
+  // Aquí se vende terreno y casa sobre el mismo residencial, así que la
+  // página junta el plano en vivo (mismo que usan los vendedores) con los
+  // beneficios del proyecto, para venderlo completo y no solo listar datos.
+  async function vistaPlano(proyectoId) {
+    app.innerHTML = '<div class="loading">Cargando el plano...</div>';
+    const [{ data: proyecto }, { data: lotes }, { data: propiedades }] = await Promise.all([
+      supabase.from('proyectos_venta').select('*').eq('id', proyectoId).maybeSingle(),
+      supabase.from('lotes').select('*').eq('proyecto_venta_id', proyectoId).order('numero'),
+      supabase.from('propiedades_venta').select('*').eq('proyecto_venta_id', proyectoId).order('orden'),
+    ]);
+
+    if (!proyecto) {
+      app.innerHTML = '<div class="wrap loading">No se encontró el proyecto.</div>';
+      return;
+    }
+
+    const porNumero = {};
+    (lotes || []).forEach((l) => { porNumero[l.numero] = l; });
+
+    const precioLoteDesde = (lotes || []).reduce(
+      (min, l) => (l.precio_lote != null && (min == null || l.precio_lote < min) ? l.precio_lote : min), null
+    ) ?? 180000;
+    const modeloCasa = (propiedades || [])[0] || {};
+    const precioCasaDesde = modeloCasa.precio ?? 580000;
+    const engancheCasa = modeloCasa.financiamiento_enganche_desde ?? 40000;
+    const plazoCasa = modeloCasa.financiamiento_plazo_max_anios ?? 25;
+    const engancheLote = 8000;
+
+    const disponibles = (lotes || []).filter((l) => l.estado === 'disponible').length;
+
+    const caracteristicas = (modeloCasa.caracteristicas && modeloCasa.caracteristicas.length)
+      ? modeloCasa.caracteristicas
+      : ['Lotes de 7 × 16 m (112 m² planos)', 'Calle adoquinada', 'Agua, luz y drenaje instalados', 'Garita de ingreso', 'Calles iluminadas y áreas verdes', 'Reglamento de residentes'];
+
+    contextoContacto = { propiedad: null, proyecto: proyecto.nombre };
+
+    app.innerHTML = `
+      <div class="wrap">
+        <div class="breadcrumb"><a href="#/">Proyectos</a> · ${proyecto.nombre}</div>
+      </div>
+
+      <div class="wrap page-hero">
+        <div class="eyebrow">${proyecto.ubicacion || ''}</div>
+        <h1>${proyecto.nombre}</h1>
+        <p>${proyecto.descripcion || 'Venta de lotes y de casas ya construidas sobre el mismo residencial: elige el terreno para construir a tu ritmo, o una casa lista para entrar a vivir.'}</p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="javascript:void(0)" id="btnEscribenosPlano">${WA_ICON} Escríbenos por WhatsApp</a>
+        </div>
+      </div>
+
+      <section class="wrap pane" style="padding-top:0;">
+        <div class="beneficios-grid">
+          <div class="beneficio-box">
+            <h3>Lotes desde</h3>
+            <div class="precio-desde">${fmtQ(precioLoteDesde)}</div>
+            <p>Enganche desde ${fmtQ(engancheLote)} y hasta 10 años de plazo, financiados directamente con nosotros.</p>
+          </div>
+          <div class="beneficio-box">
+            <h3>Casas desde</h3>
+            <div class="precio-desde">${fmtQ(precioCasaDesde)}</div>
+            <p>Construcción formal y garantizada, con hasta ${plazoCasa} años de plazo.</p>
+          </div>
+          <div class="beneficio-box">
+            <h3>Enganches mínimos</h3>
+            <div class="precio-desde">Desde ${fmtQ(engancheLote)}</div>
+            <p>Financiamiento propio, sin depender de un banco ni de trámites largos.</p>
+          </div>
+        </div>
+
+        <div class="caracteristicas-row">
+          ${caracteristicas.map((c) => `<div class="caracteristica-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${FICHA_ICONS.generic}</svg><span>${c}</span></div>`).join('')}
+        </div>
+      </section>
+
+      <section class="wrap pane" style="padding-top:0;">
+        <div class="section-head"><div class="eyebrow">El plano</div><h2>Elige tu lote</h2></div>
+        <p style="color:#8892a3; font-size:13.5px; margin:-6px 0 14px;">Toca un lote para ver su precio y condiciones. Los colores están al día: si un lote se vende o se aparta, el plano lo muestra de inmediato.</p>
+
+        <div class="plano-toolbar">
+          <div class="plano-leyenda">
+            <span><i style="background:${LOTES_COLOR.disponible}"></i> Disponible · ${disponibles}</span>
+            <span><i style="background:${LOTES_COLOR.apartado}"></i> Apartado</span>
+            <span><i style="background:${LOTES_COLOR.vendido}"></i> Vendido</span>
+          </div>
+          <button type="button" class="plano-zoom-btn" id="btnZoomPlano">Agrandar</button>
+        </div>
+
+        <div class="plano-stage" id="planoStage">
+          <div class="plano-stage-inner" id="planoStageInner">
+            <img src="https://sobrelaroca-pagos.vercel.app/plano-reu.svg" alt="Plano de ${proyecto.nombre}" draggable="false" />
+            <svg id="planoSvg" viewBox="0 0 ${LOTES_VISTA.w} ${LOTES_VISTA.h}">
+              ${Object.entries(LOTES_GEO).map(([num, g]) => {
+                const l = porNumero[num];
+                if (!l) return '';
+                return `<path data-numero="${num}" d="${g.d}" fill="${LOTES_COLOR[l.estado] || LOTES_COLOR.no_disponible}" fill-opacity="0.42"></path>`;
+              }).join('')}
+            </svg>
+          </div>
+        </div>
+
+        <div id="lotePanel"></div>
+      </section>
+
+      <section class="wrap pane" id="contacto">
+        <div class="section-head"><div class="eyebrow">Contacto</div><h2>Agenda tu visita hoy mismo</h2></div>
+        <div class="contact-wrap">
+          <div class="whatsapp-card">
+            <h3>Escríbenos directo</h3>
+            <p>¿Qué asesor deseas que te contacte?</p>
+            <div class="asesores-grid" id="asesoresGrid"><div style="color:#8892a3; font-size:13px;">Cargando asesores...</div></div>
+          </div>
+          <div>
+            <form id="contactForm">
+              <div><label for="nombre">Nombre</label><input type="text" id="nombre" required /></div>
+              <div><label for="telefono">Teléfono</label><input type="tel" id="telefono" required /></div>
+              <div><label for="mensaje">Mensaje</label><textarea id="mensaje" placeholder="Cuéntanos qué te gustaría saber..."></textarea></div>
+              <button type="submit" class="submit-btn" id="submitBtn">Enviar mensaje</button>
+              <div class="form-msg" id="formMsg"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    `;
+
+    document.getElementById('btnEscribenosPlano')?.addEventListener('click', () => abrirSelectorAsesor());
+
+    // Agrandar: igual que en la app interna, expande el plano con scroll en
+    // vez de achicar el detalle de cada lote.
+    let zoom = false;
+    document.getElementById('btnZoomPlano').addEventListener('click', (e) => {
+      zoom = !zoom;
+      document.getElementById('planoStageInner').style.width = zoom ? '200%' : '100%';
+      e.target.textContent = zoom ? 'Achicar' : 'Agrandar';
+    });
+
+    // Elegir un lote: solo muestra su precio como terreno y/o con casa. Es
+    // información para el cliente, no aparta nada — eso lo sigue haciendo
+    // el vendedor desde el cotizador.
+    const panel = document.getElementById('lotePanel');
+    document.querySelectorAll('#planoSvg path[data-numero]').forEach((path) => {
+      path.addEventListener('click', () => {
+        const l = porNumero[path.dataset.numero];
+        if (!l) return;
+        document.querySelectorAll('#planoSvg path').forEach((p) => p.setAttribute('fill-opacity', '0.42'));
+        path.setAttribute('fill-opacity', '0.68');
+
+        const precioCasaAqui = l.precio_casa != null ? l.precio_casa : precioCasaDesde;
+        const soloCasa = l.destino === 'casa';
+        const numero = path.dataset.numero;
+
+        let cuerpo;
+        if (l.estado === 'vendido') {
+          cuerpo = `<p class="lote-vendido">Este lote ya fue vendido. Pregúntanos por los que todavía están disponibles.</p>`;
+        } else if (l.estado === 'no_disponible') {
+          cuerpo = `<p class="lote-vendido">Este lote es parte de una próxima fase y todavía no está a la venta. Escríbenos para que te avisemos cuando se abra.</p>`;
+        } else {
+          const opcionTerreno = (!soloCasa && l.precio_lote != null) ? `
+            <div class="lote-opcion">
+              <div class="fila"><span>Lote solo</span><span class="precio">${fmtQ(l.precio_lote)}</span></div>
+              <div class="cond">Enganche desde ${fmtQ(engancheLote)} · 12% anual · hasta 10 años</div>
+            </div>` : '';
+          const opcionCasa = `
+            <div class="lote-opcion">
+              <div class="fila"><span>Lote con casa</span><span class="precio">${fmtQ(precioCasaAqui)}</span></div>
+              <div class="cond">Enganche desde ${fmtQ(engancheCasa)} · 12% anual · hasta ${plazoCasa} años</div>
+            </div>`;
+          cuerpo = `
+            ${l.estado === 'apartado' ? '<div class="lote-estado" style="color:#C9A227;">Apartado temporalmente por otro cliente — pregúntanos por su disponibilidad.</div>' : ''}
+            ${opcionTerreno}${opcionCasa}
+            <a class="btn btn-gold" href="javascript:void(0)" id="btnEscribenosLote" style="margin-top:10px; display:inline-flex;">${WA_ICON} Preguntar por el lote ${numero}</a>`;
+        }
+
+        panel.innerHTML = `
+          <div class="lote-panel">
+            <div class="lote-titulo">Lote ${numero}</div>
+            <div class="lote-estado">${LOTES_ROTULO[l.estado] || ''}</div>
+            ${cuerpo}
+          </div>`;
+        document.getElementById('btnEscribenosLote')?.addEventListener('click', () => {
+          contextoContacto = { propiedad: `Lote ${numero}`, proyecto: proyecto.nombre };
+          abrirSelectorAsesor();
+        });
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+
+    // Asesores y formulario de contacto (misma lógica global de siempre)
+    const asesores = await cargarAsesoresGlobal();
+    const grid = document.getElementById('asesoresGrid');
+    if (asesores && asesores.length) {
+      grid.innerHTML = asesores.map((a, i) => `
+        <button type="button" class="asesor-card" data-asesor-idx="${i}">
+          <img src="${a.foto_url}" alt="${a.nombre}" />
+          <div class="nombre">${a.nombre}</div>
+          <div class="wa-mini">${WA_ICON} WhatsApp</div>
+        </button>`).join('');
+      grid.querySelectorAll('[data-asesor-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => abrirPreguntas(asesores[Number(btn.dataset.asesorIdx)], contextoContacto));
+      });
+    } else {
+      grid.innerHTML = '<div style="color:#8892a3; font-size:13px;">Escríbenos por WhatsApp para más información.</div>';
+    }
+
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('formMsg');
+      btn.disabled = true; btn.textContent = 'Enviando...'; msg.textContent = ''; msg.className = 'form-msg';
+      const { error } = await supabase.from('contactos_web').insert({
+        nombre: document.getElementById('nombre').value,
+        telefono: document.getElementById('telefono').value,
+        mensaje: document.getElementById('mensaje').value,
+        propiedad: proyecto.nombre,
+      });
+      btn.disabled = false; btn.textContent = 'Enviar mensaje';
+      if (error) { msg.textContent = 'No se pudo enviar. Escríbenos por WhatsApp.'; msg.classList.add('err'); }
+      else { msg.textContent = '¡Gracias! Te contactaremos pronto.'; msg.classList.add('ok'); form.reset(); }
+    });
+  }
+
   async function render() {
     const hash = location.hash || '#/';
     const partes = hash.replace('#/', '').split('/').filter(Boolean);
     window.scrollTo(0,0);
     if (partes[0] === 'proyecto' && partes[1]) { contextoContacto = null; await vistaPropiedades(partes[1]); }
+    else if (partes[0] === 'plano' && partes[1]) { contextoContacto = null; await vistaPlano(partes[1]); }
     else if (partes[0] === 'propiedad' && partes[1]) await vistaDetalle(partes[1]);
     else if (partes[0] === 'casa' && partes[1]) await vistaDetalle(partes[1], true);
     else { contextoContacto = null; await vistaProyectos(); }
